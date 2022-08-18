@@ -1,7 +1,7 @@
 package ru.ckateptb.tablecloth.config;
 
 import lombok.Getter;
-import org.apache.commons.lang3.tuple.Pair;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;

@@ -3,6 +3,7 @@ package ru.ckateptb.tablecloth.particle;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.RandomUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -28,13 +29,15 @@ import java.util.function.Predicate;
 public enum Particle {
     ASH(ParticleEffect.ASH, org.bukkit.Particle.ASH),
 
+    BARRIER(ParticleEffect.BARRIER, org.bukkit.Particle.BARRIER),
+
     BLOCK_CRACK(ParticleEffect.BLOCK_CRACK, org.bukkit.Particle.BLOCK_CRACK),
 
     BLOCK_DUST(ParticleEffect.BLOCK_DUST, org.bukkit.Particle.BLOCK_DUST),
 
     BUBBLE_COLUMN_UP(ParticleEffect.BUBBLE_COLUMN_UP, org.bukkit.Particle.BUBBLE_COLUMN_UP),
 
-    BLOCK_MARKER(ParticleEffect.BLOCK_MARKER, org.bukkit.Particle.BLOCK_MARKER),
+    BLOCK_MARKER(ParticleEffect.BLOCK_MARKER, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     BUBBLE_POP(ParticleEffect.BUBBLE_POP, org.bukkit.Particle.BUBBLE_POP),
 
@@ -64,17 +67,17 @@ public enum Particle {
 
     DRIP_WATER(ParticleEffect.DRIP_WATER, org.bukkit.Particle.DRIP_WATER),
 
-    DRIPPING_DRIPSTONE_LAVA(ParticleEffect.DRIPPING_DRIPSTONE_LAVA, org.bukkit.Particle.DRIPPING_DRIPSTONE_LAVA),
+    DRIPPING_DRIPSTONE_LAVA(ParticleEffect.DRIPPING_DRIPSTONE_LAVA, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
-    DRIPPING_DRIPSTONE_WATER(ParticleEffect.DRIPPING_DRIPSTONE_WATER, org.bukkit.Particle.DRIPPING_DRIPSTONE_WATER),
+    DRIPPING_DRIPSTONE_WATER(ParticleEffect.DRIPPING_DRIPSTONE_WATER, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     DRIPPING_HONEY(ParticleEffect.DRIPPING_HONEY, org.bukkit.Particle.DRIPPING_HONEY),
 
     DRIPPING_OBSIDIAN_TEAR(ParticleEffect.DRIPPING_OBSIDIAN_TEAR, org.bukkit.Particle.DRIPPING_OBSIDIAN_TEAR),
 
-    DUST_COLOR_TRANSITION(ParticleEffect.DUST_COLOR_TRANSITION, org.bukkit.Particle.DUST_COLOR_TRANSITION),
+    DUST_COLOR_TRANSITION(ParticleEffect.DUST_COLOR_TRANSITION, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
-    ELECTRIC_SPARK(ParticleEffect.ELECTRIC_SPARK, org.bukkit.Particle.ELECTRIC_SPARK),
+    ELECTRIC_SPARK(ParticleEffect.ELECTRIC_SPARK, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     ENCHANTMENT_TABLE(ParticleEffect.ENCHANTMENT_TABLE, org.bukkit.Particle.ENCHANTMENT_TABLE),
 
@@ -86,9 +89,9 @@ public enum Particle {
 
     EXPLOSION_NORMAL(ParticleEffect.EXPLOSION_NORMAL, org.bukkit.Particle.EXPLOSION_NORMAL),
 
-    FALLING_DRIPSTONE_LAVA(ParticleEffect.FALLING_DRIPSTONE_LAVA, org.bukkit.Particle.FALLING_DRIPSTONE_LAVA),
+    FALLING_DRIPSTONE_LAVA(ParticleEffect.FALLING_DRIPSTONE_LAVA, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
-    FALLING_DRIPSTONE_WATER(ParticleEffect.FALLING_DRIPSTONE_WATER, org.bukkit.Particle.FALLING_DRIPSTONE_WATER),
+    FALLING_DRIPSTONE_WATER(ParticleEffect.FALLING_DRIPSTONE_WATER, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     FALLING_DUST(ParticleEffect.FALLING_DUST, org.bukkit.Particle.FALLING_DUST),
 
@@ -98,7 +101,7 @@ public enum Particle {
 
     FALLING_OBSIDIAN_TEAR(ParticleEffect.FALLING_OBSIDIAN_TEAR, org.bukkit.Particle.FALLING_OBSIDIAN_TEAR),
 
-    FALLING_SPORE_BLOSSOM(ParticleEffect.FALLING_SPORE_BLOSSOM, org.bukkit.Particle.FALLING_SPORE_BLOSSOM),
+    FALLING_SPORE_BLOSSOM(ParticleEffect.FALLING_SPORE_BLOSSOM, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     FIREWORKS_SPARK(ParticleEffect.FIREWORKS_SPARK, org.bukkit.Particle.FIREWORKS_SPARK),
 
@@ -106,9 +109,11 @@ public enum Particle {
 
     FLASH(ParticleEffect.FLASH, org.bukkit.Particle.FLASH),
 
-    GLOW(ParticleEffect.GLOW, org.bukkit.Particle.GLOW),
+    FOOTSTEP(ParticleEffect.FOOTSTEP, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
-    GLOW_SQUID_INK(ParticleEffect.GLOW_SQUID_INK, org.bukkit.Particle.GLOW_SQUID_INK),
+    GLOW(ParticleEffect.GLOW, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
+
+    GLOW_SQUID_INK(ParticleEffect.GLOW_SQUID_INK, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     HEART(ParticleEffect.HEART, org.bukkit.Particle.HEART),
 
@@ -119,6 +124,8 @@ public enum Particle {
     LANDING_OBSIDIAN_TEAR(ParticleEffect.LANDING_OBSIDIAN_TEAR, org.bukkit.Particle.LANDING_OBSIDIAN_TEAR),
 
     LAVA(ParticleEffect.LAVA, org.bukkit.Particle.LAVA),
+
+    LIGHT(ParticleEffect.LIGHT, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     MOB_APPEARANCE(ParticleEffect.MOB_APPEARANCE, org.bukkit.Particle.MOB_APPEARANCE),
 
@@ -132,7 +139,7 @@ public enum Particle {
 
     REVERSE_PORTAL(ParticleEffect.REVERSE_PORTAL, org.bukkit.Particle.REVERSE_PORTAL),
 
-    SCRAPE(ParticleEffect.SCRAPE, org.bukkit.Particle.SCRAPE),
+    SCRAPE(ParticleEffect.SCRAPE, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     SLIME(ParticleEffect.SLIME, org.bukkit.Particle.SLIME),
 
@@ -144,7 +151,7 @@ public enum Particle {
 
     SNOWBALL(ParticleEffect.SNOWBALL, org.bukkit.Particle.SNOWBALL),
 
-    SNOWFLAKE(ParticleEffect.SNOWFLAKE, org.bukkit.Particle.SNOWFLAKE),
+    SNOWFLAKE(ParticleEffect.SNOWFLAKE, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     SNOW_SHOVEL(ParticleEffect.SNOW_SHOVEL, org.bukkit.Particle.SNOW_SHOVEL),
 
@@ -164,7 +171,7 @@ public enum Particle {
 
     SPIT(ParticleEffect.SPIT, org.bukkit.Particle.SPIT),
 
-    SPORE_BLOSSOM_AIR(ParticleEffect.SPORE_BLOSSOM_AIR, org.bukkit.Particle.SPORE_BLOSSOM_AIR),
+    SPORE_BLOSSOM_AIR(ParticleEffect.SPORE_BLOSSOM_AIR, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     SQUID_INK(ParticleEffect.SQUID_INK, org.bukkit.Particle.SQUID_INK),
 
@@ -178,7 +185,7 @@ public enum Particle {
 
     TOWN_AURA(ParticleEffect.TOWN_AURA, org.bukkit.Particle.TOWN_AURA),
 
-    VIBRATION(ParticleEffect.VIBRATION, org.bukkit.Particle.VIBRATION),
+    VIBRATION(ParticleEffect.VIBRATION, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     VILLAGER_ANGRY(ParticleEffect.VILLAGER_ANGRY, org.bukkit.Particle.VILLAGER_ANGRY),
 
@@ -194,9 +201,9 @@ public enum Particle {
 
     WATER_WAKE(ParticleEffect.WATER_WAKE, org.bukkit.Particle.WATER_WAKE),
 
-    WAX_OFF(ParticleEffect.WAX_OFF, org.bukkit.Particle.WAX_OFF),
+    WAX_OFF(ParticleEffect.WAX_OFF, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
-    WAX_ON(ParticleEffect.WAX_ON, org.bukkit.Particle.WAX_ON),
+    WAX_ON(ParticleEffect.WAX_ON, org.bukkit.Particle.values()[RandomUtils.nextInt(0, org.bukkit.Particle.values().length - 1)]),
 
     WHITE_ASH(ParticleEffect.WHITE_ASH, org.bukkit.Particle.WHITE_ASH);
 
@@ -209,6 +216,7 @@ public enum Particle {
         this.particle = particle;
         this.dataClass = particle.getDataType();
     }
+
 
     public void display(ParticleEffect effect, Location loc, int amount) {
         display(effect, loc, amount, 0, 0, 0);

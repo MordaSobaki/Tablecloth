@@ -2,8 +2,8 @@ package ru.ckateptb.tablecloth.gui.chest;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.Validate;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;

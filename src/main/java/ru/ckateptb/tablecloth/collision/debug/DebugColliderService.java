@@ -1,8 +1,8 @@
 package ru.ckateptb.tablecloth.collision.debug;
 
-import org.apache.commons.lang3.RandomUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.RandomUtils;
 import ru.ckateptb.tablecloth.Tablecloth;
 import ru.ckateptb.tablecloth.async.AsyncService;
 import ru.ckateptb.tablecloth.collision.Collider;

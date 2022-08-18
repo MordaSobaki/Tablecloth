@@ -1,28 +1,46 @@
 package ru.ckateptb.tablecloth.config;
 
-import lombok.Getter;
 import org.bukkit.plugin.Plugin;
+
 import ru.ckateptb.tablecloth.Tablecloth;
 import ru.ckateptb.tablecloth.ioc.annotation.Component;
-import ru.ckateptb.tablecloth.temporary.paralyze.ParalyzeType;
 
-@Getter
 @Component
 public class TableclothConfig extends YamlConfig {
-    @ConfigField(name = "debug.collider", comment = "This function is necessary for debugging collisions (do not touch if you do not understand what it is about)")
-    private boolean debugCollider = false;
+   @ConfigField(
+      name = "debug.collider",
+      comment = "This function is necessary for debugging collisions (do not touch if you do not understand what it is about)"
+   )
+   private boolean debugCollider = false;
+   @ConfigField(
+      name = "paralyze.name"
+   )
+   private String paralyzeName = "§b§l<==§2§l Paralyzed §b§l==>";
+   @ConfigField(
+      name = "paralyze.commandHandler",
+      comment = "Сообщение, отправляющееся игроку в том случае, если он пытается написать команду, находясь в обездвиженном состоянии (Paralyze)"
+   )
+   private String paralyzeCommand = "Вы не можете отправлять команды в обездвиженном состоянии!";
+   
+   private Integer paralyzeKnockback = 100;
 
-    @ConfigField(name = "paralyze.name")
-    private String paralyzeName = "§b§l<==§2§l Paralyzed §b§l==>";
-    @ConfigField(name = "paralyze.type", comment = "Allowed types INVENTORY (Not perfect, but very light), ARMORSTAND (recommended ), MOVE_HANDLER (May cause TPS drawdowns with a large number of instances)")
-    private String paralyzeType = ParalyzeType.ARMORSTAND.name();
+   public Plugin getPlugin() {
+      return Tablecloth.getInstance();
+   }
 
-    public ParalyzeType getParalyzeType() {
-        return ParalyzeType.valueOf(paralyzeType);
-    }
+   public boolean isDebugCollider() {
+      return this.debugCollider;
+   }
 
-    @Override
-    public Plugin getPlugin() {
-        return Tablecloth.getInstance();
-    }
+   public String getParalyzeName() {
+      return this.paralyzeName;
+   }
+
+   public String getParalyzeCommand() {
+      return this.paralyzeCommand;
+   }
+
+   public Integer getParalyzeKnockback() {
+      return this.paralyzeKnockback;
+   }
 }

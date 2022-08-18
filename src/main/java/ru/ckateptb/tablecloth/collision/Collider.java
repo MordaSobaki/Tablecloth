@@ -53,7 +53,7 @@ public interface Collider {
     }
 
     default boolean handleEntityCollision(LivingEntity source, boolean livingOnly, boolean selfCollision, EntityCollisionCallback callback) {
-        return handleEntityCollision(source, livingOnly, selfCollision, false, callback, (entity) -> true);
+        return handleEntityCollision(source, livingOnly, selfCollision, true, callback, (entity) -> true);
     }
 
     default boolean handleEntityCollision(LivingEntity source, boolean livingOnly, boolean selfCollision, boolean armorStandCollision, EntityCollisionCallback callback, Predicate<Entity> filter) {
@@ -61,7 +61,10 @@ public interface Collider {
     }
 
     default boolean handleEntityCollision(boolean livingOnly, boolean armorStandCollision, EntityCollisionCallback callback, Predicate<Entity> filter) {
-        World world = getWorld();
+        
+    	
+    	
+    	World world = getWorld();
         ImmutableVector halfExtents = getHalfExtents();
         ImmutableVector position = getPosition();
         filter = filter.and(entity -> {
@@ -70,7 +73,9 @@ public interface Collider {
             return armorStandCollision || (entity instanceof ArmorStand armorStand && Objects.equals(armorStand.getCustomName(), "paralyze|armor|stand"));
         });
         for (Entity entity : world.getNearbyEntities(position.toLocation(world), halfExtents.getX(), halfExtents.getY(), halfExtents.getZ(), filter)) {
-            if (intersects(new AxisAlignedBoundingBoxCollider(entity).at(entity.getLocation().toVector()))) {
+            
+        	if (intersects(new AxisAlignedBoundingBoxCollider(entity).at(entity.getLocation().toVector()))) {
+        		
                 if (callback.onCollision(entity) == CollisionCallbackResult.CONTINUE) {
                     continue;
                 }

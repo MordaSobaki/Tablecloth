@@ -50,13 +50,13 @@ dependencies {
     implementation("com.zaxxer:HikariCP:3.4.2")
     implementation("com.j256.ormlite:ormlite-jdbc:6.0")
     implementation("xyz.xenondevs:particle:1.7")
-    implementation("org.jooq:joor:0.9.13")
+//    implementation("org.jooq:joor:0.9.13")
     // high performance, near optimal caching library https://github.com/ben-manes/caffeine
     implementation("com.github.ben-manes.caffeine", "caffeine", "3.0.5") {
         exclude(module = "checker-qual")
     }
-    paperDevBundle("1.18.1-R0.1-SNAPSHOT")
-    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0-SNAPSHOT")
+    paperDevBundle("1.17.1-R0.1-SNAPSHOT")
+    compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
     compileOnly("dev.jorel.CommandAPI:commandapi-core:6.4.0")
     compileOnly("org.projectlombok", "lombok", "1.18.22")
     annotationProcessor("org.projectlombok", "lombok", "1.18.22")
@@ -89,12 +89,6 @@ tasks {
         from("LICENSE") {
             rename { "${project.name.toUpperCase()}_${it}" }
         }
-    }
-}
-
-configurations {
-    all {
-        exclude(group = "com.destroystokyo.paper", module = "paper-api")
     }
 }
 

@@ -1,45 +1,56 @@
 package ru.ckateptb.tablecloth.temporary.paralyze;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.ListenerPriority;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.bukkit.GameMode;
-import org.bukkit.entity.*;
-import org.bukkit.metadata.FixedMetadataValue;
-import ru.ckateptb.tablecloth.Tablecloth;
-import ru.ckateptb.tablecloth.config.TableclothConfig;
-import ru.ckateptb.tablecloth.ioc.IoC;
-import ru.ckateptb.tablecloth.temporary.*;
-
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.attribute.AttributeModifier.Operation;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.ListenerPriority;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketEvent;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+
+import ru.ckateptb.tablecloth.Tablecloth;
+import ru.ckateptb.tablecloth.config.TableclothConfig;
+import ru.ckateptb.tablecloth.ioc.IoC;
+import ru.ckateptb.tablecloth.temporary.AbstractTemporary;
+import ru.ckateptb.tablecloth.temporary.Temporary;
+import ru.ckateptb.tablecloth.temporary.TemporaryBossBar;
+import ru.ckateptb.tablecloth.temporary.TemporaryService;
+import ru.ckateptb.tablecloth.temporary.TemporaryUpdateState;
+
 public class TemporaryParalyze extends AbstractTemporary {
-    public static final ProtocolManager protocolManager;
+	
+	public static final ProtocolManager protocolManager;
 
     static {
         protocolManager = ProtocolLibrary.getProtocolManager();
-        protocolManager.addPacketListener(
-                new PacketAdapter(Tablecloth.getInstance(), ListenerPriority.NORMAL, PacketType.Play.Client.USE_ENTITY) {
-                    public void onPacketReceiving(PacketEvent e) {
-                        if (e.getPacketType() == PacketType.Play.Client.USE_ENTITY) {
-                            if (e.getPlayer().getEntityId() == e.getPacket().getIntegers().read(0))
-                                e.setCancelled(true);
-                        }
-                    }
-                }
-        );
+        
+        protocolManager.addPacketListener(new PacketAdapter(Tablecloth.getInstance(), ListenerPriority.NORMAL, PacketType.Play.Client.LOOK) {
+            public void onPacketReceiving(PacketEvent e) {
+               if (TemporaryParalyze.isParalyzed(e.getPlayer())) {
+                  e.getPacket().getFloat().write(0, TemporaryParalyze.sourceLoc.getYaw());
+                  e.getPacket().getFloat().write(1, TemporaryParalyze.sourceLoc.getPitch());
+               }
+
+            }
+         });
     }
 
     private static final Map<UUID, Cache<UUID, Boolean>> cache = new HashMap<>();
@@ -50,124 +61,102 @@ public class TemporaryParalyze extends AbstractTemporary {
                 Caffeine.newBuilder().expireAfterAccess(Duration.ofMillis(1000)).build()
         ).get(uuid, id -> entity.hasMetadata("tablecloth:paralyze"));
     }
+	
+	
+   private final TemporaryService temporaryService;
+   private final Tablecloth plugin;
+   private final LivingEntity livingEntity;
+   private final long duration;
+   private TemporaryBossBar temporaryBossBar;
+   private TableclothConfig config;
+   private Integer food;
+   private static Location sourceLoc;
+   private Float saturation;
+   
+   
+   public TemporaryParalyze(LivingEntity livingEntity, long duration) {
+      this.livingEntity = livingEntity;
+      sourceLoc = livingEntity.getLocation().clone();
+      this.duration = duration;
+      this.config = (TableclothConfig)IoC.get(TableclothConfig.class);
+      this.temporaryService = (TemporaryService)IoC.get(TemporaryService.class);
+      this.plugin = Tablecloth.getInstance();
+      
+      if (this.livingEntity.hasMetadata("tablecloth:paralyze")) {
+          List.copyOf(this.livingEntity.getMetadata("tablecloth:paralyze")).forEach(metadataValue -> {
+              if (metadataValue.value() instanceof Temporary temporary) {
+                  temporaryService.revert(temporary);
+              }
+          });
+      }
 
-    private final TemporaryService temporaryService;
-    private final Tablecloth plugin;
-    @Getter
-    private final LivingEntity livingEntity;
-    private final long duration;
-    public ArmorStand armorStand;
-    private TemporaryBossBar temporaryBossBar;
-    private boolean hasAI;
-//    private AnvilGUI anvilGUI;
-    private GameMode originalGameMode;
+      this.setRevertTime(duration + System.currentTimeMillis());
+      this.register();
+   }
 
-    public TemporaryParalyze(LivingEntity livingEntity, long duration) {
-        this.livingEntity = livingEntity;
-        this.duration = duration;
-        this.temporaryService = IoC.get(TemporaryService.class);
-        this.plugin = Tablecloth.getInstance();
-        if (this.livingEntity.hasMetadata("tablecloth:paralyze")) {
-            List.copyOf(this.livingEntity.getMetadata("tablecloth:paralyze")).forEach(metadataValue -> {
-                if (metadataValue.value() instanceof Temporary temporary) {
-                    temporaryService.revert(temporary);
-                }
-            });
-        }
-        this.setRevertTime(duration + System.currentTimeMillis());
-        this.register();
-    }
-
-    @Override
-    @SneakyThrows
-    public void init() {
-        if (livingEntity instanceof Player player) {
-            TableclothConfig config = IoC.get(TableclothConfig.class);
-            String paralyzeName = config.getParalyzeName();
+   public void init() {
+      try {
+         
+    	  
+    	  
+    	  
+    	  
+    	  
+         this.livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addModifier(new AttributeModifier(UUID.randomUUID(), "tablecloth:Paralyze", -1.0D, Operation.MULTIPLY_SCALAR_1));
+         this.livingEntity.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).addModifier(new AttributeModifier(UUID.randomUUID(), "tablecloth:Paralyze", 1, Operation.ADD_NUMBER));
+         
+         if (livingEntity instanceof Player player) {
+            String paralyzeName = this.config.getParalyzeName();
             this.livingEntity.setMetadata("tablecloth:paralyze", new FixedMetadataValue(this.plugin, this));
             UUID uuid = player.getUniqueId();
+            
+            
             cache.put(uuid, Caffeine.newBuilder().expireAfterAccess(Duration.ofMillis(duration)).build());
             cache.get(uuid).get(uuid, key -> true);
-            ParalyzeType paralyzeType = config.getParalyzeType();
-            if (paralyzeType == ParalyzeType.INVENTORY) {
-//                anvilGUI = new AnvilGUI.Builder()
-//                        .preventClose()
-//                        .title(paralyzeName)
-//                        .plugin(Tablecloth.getInstance())
-//                        .text(paralyzeName)
-//                        .onComplete((player1, text) -> AnvilGUI.Response.text(paralyzeName))
-//                        .itemLeft(new ItemStack(Material.BARRIER))
-//                        .itemRight(new ItemStack(Material.BARRIER))
-//                        .open(player);
-            } else if (paralyzeType == ParalyzeType.ARMORSTAND) {
-                this.originalGameMode = player.getGameMode();
-                this.armorStand = (ArmorStand) player.getWorld().spawnEntity(player.getLocation(), EntityType.ARMOR_STAND);
-                this.armorStand.setGravity(true);
-                this.armorStand.setCanPickupItems(false);
-                this.armorStand.setMarker(false);
-                this.armorStand.setVisible(false);
-                this.armorStand.setCustomName("paralyze|armor|stand");
-                this.armorStand.setCustomNameVisible(false);
-                player.setSneaking(false);
-                spectateArmorStand();
-            }
+            
+            
+            //BendingPlayer.getBendingPlayer(player).toggleBending();
+            this.food = ((Player)this.livingEntity).getFoodLevel();
+            this.saturation = ((Player)this.livingEntity).getSaturation();
+            this.livingEntity.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, (int)(this.duration / 50L), 128));
+            ((Player)this.livingEntity).setSaturation(0.0F);
+            ((Player)this.livingEntity).setFoodLevel(2);
             temporaryBossBar = new TemporaryBossBar(paralyzeName, duration, player);
-        } else {
-            hasAI = livingEntity.hasAI();
-            livingEntity.setAI(false);
-        }
-    }
+         }
 
-    @Override
-    public TemporaryUpdateState update() {
-        return TemporaryUpdateState.CONTINUE;
-    }
+      } catch (Exception var4) {
+         var4.printStackTrace();
+      }
+   }
 
-    public void spectateArmorStand() {
-        if (livingEntity instanceof Player player) {
-            changeGameModePacket(player, 3);
-            setSpectatorEntity(player, armorStand);
-        }
-    }
+   public TemporaryUpdateState update() {
+      return TemporaryUpdateState.CONTINUE;
+   }
 
-    private void changeGameModePacket(Player player, float value) {
-        try {
-            PacketContainer packetContainer = protocolManager.createPacket(PacketType.Play.Server.GAME_STATE_CHANGE);
-            packetContainer.getGameStateIDs().write(0, 3);
-            packetContainer.getFloat().write(0, value);
-            protocolManager.sendServerPacket(player, packetContainer);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+   public void revert() {
+      if (this.livingEntity.hasMetadata("tablecloth:paralyze")) this.livingEntity.removeMetadata("tablecloth:paralyze", this.plugin);
+      
 
-    private void setSpectatorEntity(Player player, Entity entity) {
-        try {
-            PacketContainer packetContainer = protocolManager.createPacket(PacketType.Play.Server.CAMERA);
-            packetContainer.getIntegers().write(0, entity.getEntityId());
-            protocolManager.sendServerPacket(player, packetContainer);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+      cache.remove(this.livingEntity.getUniqueId());
+      
+      
+      this.livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).getModifiers().forEach((a) -> { if (a.getName() == "tablecloth:Paralyze") this.livingEntity.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).removeModifier(a); });
+      this.livingEntity.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).getModifiers().forEach((a) -> { if (a.getName() == "tablecloth:Paralyze1") this.livingEntity.getAttribute(Attribute.GENERIC_KNOCKBACK_RESISTANCE).removeModifier(a); });
+      
+      
+      if (livingEntity instanceof Player player) {
+         player.setSaturation(this.saturation);
+         player.setFoodLevel(this.food);
+      }
 
-    @Override
-    public void revert() {
-        if (livingEntity.hasMetadata("tablecloth:paralyze")) livingEntity.removeMetadata("tablecloth:paralyze", plugin);
-        cache.remove(livingEntity.getUniqueId());
-//        if (anvilGUI != null) anvilGUI.closeInventory();
-        if (armorStand != null) {
-            livingEntity.teleport(armorStand);
-            this.armorStand.remove();
-            if (livingEntity instanceof Player player) {
-                changeGameModePacket(player, (byte) originalGameMode.getValue());
-                setSpectatorEntity(player, player);
-                player.setFlying(false);
-                player.setSneaking(true);
-                player.setSneaking(false);
-            }
-        }
-        if (temporaryBossBar != null) temporaryService.revert(temporaryBossBar);
-        else livingEntity.setAI(hasAI);
-    }
+      if (this.temporaryBossBar != null) {
+         this.temporaryService.revert(this.temporaryBossBar);
+      }
+
+   }
+
+   public LivingEntity getLivingEntity() {
+      return this.livingEntity;
+   }
+
 }
